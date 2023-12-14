@@ -5,10 +5,11 @@
 ### 檔案說明
 說明本次YAML完成的事項，以及簡易說明。
 
-+ ``` Deployment ```：處理Pod的創建與維護，容器Image從公開的ECR取得。
+
++ ``` Deployment ```：處理Pod的創建與維護，容器Image從私有庫拉取 (也可以從公有庫拉取，在hello-sre.yaml檔中有公有庫的URL)
     + ``` name ```：```deployment-hello-sre```
     + ``` namespace ```：```hello-sre```
-    + ``` image ```：```public.ecr.aws/c7v7e0l7/teddy:latest```
+    + ``` image ```：```xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/assignment:latest```
 
 + ``` Service ```：處理Deployment的網路流量處理。
     + ``` name ```：```service-hello-sre```

@@ -20,7 +20,7 @@ spec:
         app.kubernetes.io/name: hello-sre
     spec:
       containers:
-      - image: public.ecr.aws/c7v7e0l7/teddy:latest
+      - image: 851662735658.dkr.ecr.us-east-1.amazonaws.com/assignment:latest #公有庫：public.ecr.aws/c7v7e0l7/teddy:latest
         imagePullPolicy: Always
         name: hello-sre
         ports:

@@ -40,8 +40,9 @@ nginx        latest    a6bd71f48f68   2 weeks ago      187MB
 ```
 
 ### 打包後的動作
-接下來就可以看是要上傳到哪個Repository上，這次會先放在dockerhub上
+接下來就可以看是要上傳到哪個Repository上，這次會先放在dockerhub以及AWS的ECR中(ECR也可以決定放在私有庫或者公開庫上，本次實作都有放上)
 
+**Dockerhub**
 
 1.``` docker login ```
 
@@ -49,4 +50,18 @@ nginx        latest    a6bd71f48f68   2 weeks ago      187MB
 
 3.``` docker push teddymelon/topic-2:latest ```
 
-4.``` The push refers to repository [docker.io/teddymelon/topic-2] ```
+**AWS ECR Public**
+
+1.``` aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws/xxxxxxxx ```
+
+2.``` docker tag 677475 public.ecr.aws/xxxxxxxx/teddy:latest ```
+
+3.``` docker push public.ecr.aws/xxxxxxxx/teddy:latest ```
+
+**AWS ECR Private**
+
+1.``` aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com ```
+
+2.``` docker tag assignment:latest xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/assignment:latest ```
+
+3.``` docker push xxxxxxxxxxxx.dkr.ecr.us-east-1.amazonaws.com/assignment:latest ```
