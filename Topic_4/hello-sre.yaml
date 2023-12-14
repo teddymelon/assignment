@@ -1,0 +1,62 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: hello-sre
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: hello-sre
+  name: deployment-hello-sre
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: hello-sre
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: hello-sre
+    spec:
+      containers:
+      - image: 851662735658.dkr.ecr.us-east-1.amazonaws.com/assignment:latest #public.ecr.aws/c7v7e0l7/teddy:latest
+        imagePullPolicy: Always
+        name: hello-sre
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: hello-sre
+  name: service-hello-sre
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: hello-sre
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  namespace: hello-sre
+  name: ingress-hello-sre
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  ingressClassName: alb
+  rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: service-hello-sre
+              port:
+                number: 80

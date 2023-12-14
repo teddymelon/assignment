@@ -1,0 +1,49 @@
+name: Nginx deploy to EKS
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Install kubectl              #在action上安裝kubectl
+      uses: azure/setup-kubectl@v3.0
+      id: install
+
+    - name: Configure AWS Credentials        #設置AWS的Credential，方便後續推上ECR & EKS
+      uses: aws-actions/configure-aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR             #在該action 主機中登入AWS ECR (本次登入私有庫)
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push docker image to Amazon ECR #把Topic-4內的Dockerfile重新打包，並且給予tag
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: assignment
+        IMAGE_TAG: latest
+      run:
+        docker build -t "$REGISTRY/$REPOSITORY:$IMAGE_TAG" .
+
+    - name: push to ECR                        #將重新打包後的Docker Image 推送到私有庫內
+      env:
+        REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        REPOSITORY: assignment
+        IMAGE_TAG: latest    
+      run:
+        docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+    - name: Update kube config                 #更新kube config，讓該action 主機內可以連線到EKS
+      run: aws eks update-kubeconfig --name teddy    #通過aws eks指令來更新到teddy這座EKS，Terraform執行後的output中也可以取得相對應的名稱(跟Terraform配置上一樣即可)。
+    
+    - name: Deploy to EKS                       #接下來把Topic-4內的hello-sre.yaml apply到EKS內
+      run: |
+        kubectl apply -f hello-sre.yaml
