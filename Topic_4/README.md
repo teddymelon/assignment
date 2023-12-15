@@ -2,6 +2,25 @@
 ### 主要思路
 - 通過撰寫cicd.yml來進行CICD的自動化部署
 
+補充說明：CICD的部分模擬的是線上已經有Test/Production Environment，若需要自動化Terraform創建，僅需在CICD中加入[Terraform的自動化部署](https://github.com/hashicorp/terraform-github-actions)。
+
+加入類似以下的Config即可。
+```
+    - name: Terraform Init
+      uses: hashicorp/terraform-github-actions/init@v0.4.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: 'terraform'
+        AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+    - name: Terraform Validate
+      uses: hashicorp/terraform-github-actions/validate@v0.3.7
+
+    - name: Terraform Apply
+      uses: hashicorp/terraform-github-actions/apply@v0.4.0
+```
+
 ### 前情提要
 - 準備好一份Dockerfile  （欲部署的Docker Image）
 - 準備好一份hello-sre.yaml  （欲部署在EKS上的yaml）
