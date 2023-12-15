@@ -5,6 +5,8 @@
 3. 如何撰寫 ``` Yaml File ``` 來創建 ``` 問題2 ```的 ``` Docker Image ```，並且通過``` AWS ALB ```讓``` 外部使用者 ```存取。
 4. 如何通過 ``` CICD Tool ``` 來自動化 ``` 問題2、3 ```
 
+**備註：CICD的部分模擬的是線上已經有Test/Production Environment，若需要自動化Terraform創建，僅需在CICD中加入Terraform的自動化部署。
+
 ### 選擇環境
 本次Assignment使用以下環境與工具進行實作：
 + ``` AWS EKS ```
